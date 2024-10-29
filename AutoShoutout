@@ -1,0 +1,54 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Collections;
+using Newtonsoft.Json;
+
+public class CPHInline
+{
+	
+	public bool Execute()
+	{
+		// First words triggers bot to check if username is in a list in file
+		// If username is in list, then take name and insert into text string /shoutout [username]
+		// Send the message in chat
+		
+		string streamerNamesStr = CPH.GetGlobalVar<string>("AutoShoutoutList", false);
+		
+		IEnumerable<string> streamerNames = JsonConvert.DeserializeObject<List<string>>(streamerNamesStr);
+		
+		if (streamerNames != null){
+			foreach (var line in streamerNames){
+				CPH.LogInfo($"Found name in read of Global Variable {line}"); // string interpolation
+			}
+			
+		}
+		
+		// read ShoutoutComplete Global variable into string list, if streamer name is not in complete list, do shoutout, add user to complete list
+		// Json string-afy shoutout complete list, update global variable
+		var list = CPH.GetGlobalVar<string>("AutoShoutoutList", false);
+		
+		if(!args.ContainsKey("userName"))
+		{
+			return true;
+		}
+		
+		string user = args["userName"].ToString().ToLower();
+		string userNum = args["userId"].ToString();
+		
+		// if variable user is == to streamerNamesStr, then type in chat string text
+		
+		foreach(string name in streamerNames){
+			if (user == name){
+				CPH.TwitchSendShoutoutById(userNum);
+			}
+			else{
+				CPH.LogInfo($"Cannot find match.");
+			}
+		}
+		
+		CPH.LogInfo($"Pulling from shoutout: {user}");
+		
+		return true;
+	}
+}
