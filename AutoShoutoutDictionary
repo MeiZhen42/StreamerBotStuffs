@@ -1,0 +1,33 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Collections;
+using Newtonsoft.Json;
+
+public class CPHInline
+{
+	// setting filepath
+	public static readonly string directoryArg = "directoryPath";
+	
+	public bool Execute()
+	{
+		// from filepath, read file, parse into a list
+		string path; // declares new, null string variable (un-initialized memory)
+		CPH.TryGetArg(directoryArg, out path); // from .NET nomenclature
+		
+		
+		var allLinesText = File.ReadLines(path); //iInumerable is general collection of strings
+		
+		if (allLinesText != null){
+			foreach (var line in allLinesText){
+				CPH.LogInfo($"Found line {line}"); // string interpolation
+			}
+			var streamerNamesStr = JsonConvert.SerializeObject(allLinesText);
+			CPH.LogInfo(streamerNamesStr);
+			CPH.SetGlobalVar("AutoShoutoutList", streamerNamesStr, false);
+			
+		}
+		
+		return true;
+	}
+}
